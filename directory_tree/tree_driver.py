@@ -66,10 +66,16 @@ class DisplayTree:
 
     # Generating Output Lines [With Optional Separator Lines]
     def _generateLines(self, paths):
-
+        lastAtDepth = {}
         for path in paths:
-            if self.spacing and path.parent is not None and path.path.is_dir():
-                yield path.displaySpacer()
+            if self.spacing and path.parent is not None:
+                previous = lastAtDepth.get(path.depth)
+                afterDirectory = (
+                    previous is not None and previous.parent is path.parent and previous.path.is_dir()
+                )
+                if path.path.is_dir() or afterDirectory:
+                    yield path.displaySpacer()
+                lastAtDepth[path.depth] = path
             yield path.displayPath()
 
     # Display Function to Print Directory Tree
